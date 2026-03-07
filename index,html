@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>きょうのおしごと ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #7DD3FC;
+    --sun: #FDE68A;
+    --grass: #86EFAC;
+    --peach: #FCA5A5;
+    --lavender: #C4B5FD;
+    --orange: #FDBA74;
+    --bg: #FFF9F0;
+    --card: #FFFFFF;
+    --text: #1E293B;
+    --muted: #94A3B8;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --radius: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Zen Maru Gothic', 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background bubbles */
+  .bg-bubbles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bubble {
+    position: absolute; border-radius: 50%; opacity: 0.25;
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.25; }
+    90% { opacity: 0.25; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 480px; margin: 0 auto;
+    padding: 24px 16px 120px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center; margin-bottom: 28px;
+    animation: slideDown 0.6s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .header-emoji { font-size: 56px; display: block; margin-bottom: 4px; }
+  .header h1 {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900; font-size: 28px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .date-badge {
+    display: inline-block; margin-top: 8px;
+    background: var(--sun); color: #92400E;
+    font-weight: 700; font-size: 13px;
+    padding: 4px 14px; border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(253,230,138,0.5);
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: #E2E8F0; border-radius: 999px;
+    height: 16px; margin-bottom: 8px; overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+  }
+  .progress-bar {
+    height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg, #86EFAC, #34D399);
+    transition: width 0.6s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .progress-bar::after {
+    content: '';
+    position: absolute; top: 0; left: -100%; width: 60%;
+    height: 100%; background: rgba(255,255,255,0.4);
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    to { left: 200%; }
+  }
+  .progress-label {
+    text-align: right; font-size: 12px;
+    color: var(--muted); font-weight: 700; margin-bottom: 20px;
+  }
+
+  /* Task cards */
+  .tasks { display: flex; flex-direction: column; gap: 12px; }
+
+  .task-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 18px 20px; display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow); cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+    border: 3px solid transparent;
+    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .task-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+  .task-card:active { transform: scale(0.97); }
+  .task-card.done {
+    border-color: #86EFAC;
+    background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+  }
+
+  .task-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  .task-card.done .task-icon { transform: scale(1.15) rotate(-5deg); }
+
+  .task-info { flex: 1; }
+  .task-name {
+    font-weight: 800; font-size: 17px; color: var(--text);
+    transition: color 0.3s;
+  }
+  .task-card.done .task-name {
+    color: #16A34A;
+    text-decoration: line-through;
+    text-decoration-color: #86EFAC;
+  }
+  .task-sub {
+    font-size: 12px; color: var(--muted); margin-top: 2px; font-weight: 400;
+  }
+
+  /* Custom checkbox */
+  .check-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 3px solid #CBD5E1;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+    background: white;
+  }
+  .task-card.done .check-circle {
+    background: #22C55E; border-color: #22C55E;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(34,197,94,0.2);
+  }
+  .check-circle svg { display: none; }
+  .task-card.done .check-circle svg { display: block; }
+
+  /* Badges section */
+  .badges-section {
+    margin-top: 32px;
+    animation: slideUp 0.6s 0.3s both;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .section-title {
+    font-weight: 800; font-size: 18px; color: var(--text);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .badges-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .badge-item {
+    background: var(--card); border-radius: 18px;
+    padding: 14px 8px; text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .badge-item.locked { opacity: 0.35; filter: grayscale(1); }
+  .badge-item:not(.locked) { animation: badgePop 0.4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes badgePop {
+    from { transform: scale(0.8); }
+    to { transform: scale(1); }
+  }
+  .badge-emoji { font-size: 32px; display: block; margin-bottom: 4px; }
+  .badge-name { font-size: 11px; font-weight: 700; color: var(--text); }
+  .badge-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* Streak */
+  .streak-card {
+    margin-top: 20px;
+    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+    border-radius: var(--radius); padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 20px rgba(253,186,74,0.3);
+  }
+  .streak-fire { font-size: 40px; }
+  .streak-info h3 { font-weight: 800; font-size: 16px; color: #92400E; }
+  .streak-info p { font-size: 13px; color: #B45309; margin-top: 2px; }
+
+  /* Completion banner */
+  .complete-banner {
+    display: none; text-align: center;
+    background: linear-gradient(135deg, #DCFCE7, #A7F3D0);
+    border-radius: var(--radius); padding: 24px;
+    margin-top: 20px; box-shadow: 0 4px 24px rgba(34,197,94,0.2);
+  }
+  .complete-banner.show {
+    display: block;
+    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .complete-banner .big-emoji { font-size: 64px; display: block; margin-bottom: 8px; }
+  .complete-banner h2 { font-size: 22px; font-weight: 900; color: #15803D; }
+  .complete-banner p { color: #16A34A; margin-top: 4px; font-weight: 600; }
+
+  /* Reset button */
+  .reset-btn {
+    display: block; width: 100%; margin-top: 16px;
+    background: none; border: 2px dashed #CBD5E1;
+    border-radius: 16px; padding: 12px;
+    color: var(--muted); font-family: inherit;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { background: #F1F5F9; color: var(--text); border-color: #94A3B8; }
+
+  /* Confetti burst */
+  .confetti-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 999;
+  }
+  .confetti-piece {
+    position: absolute; width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 1.5s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
+  }
+
+  /* Stars floating */
+  .star-pop {
+    position: fixed; pointer-events: none; z-index: 1000;
+    font-size: 24px; animation: starFloat 1s ease-out forwards;
+  }
+  @keyframes starFloat {
+    0% { transform: translateY(0) scale(0.5); opacity: 1; }
+    100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-bubbles" id="bubbles"></div>
+
+<div class="container">
+  <div class="header">
+    <span class="header-emoji">⭐</span>
+    <h1>きょうのおしごと</h1>
+    <div class="date-badge" id="dateBadge"></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 6 おわった</div>
+
+  <div class="tasks" id="taskList"></div>
+
+  <div class="complete-banner" id="completeBanner">
+    <span class="big-emoji">🎉</span>
+    <h2>ぜんぶできたよ！</h2>
+    <p>きょうもよくがんばりました！すごい！</p>
+  </div>
+
+  <div class="badges-section">
+    <div class="section-title">🏅 バッジコレクション</div>
+    <div class="badges-grid" id="badgesGrid"></div>
+  </div>
+
+  <div class="streak-card">
+    <div class="streak-fire">🔥</div>
+    <div class="streak-info">
+      <h3><span id="streakCount">0</span>日れんぞく！</h3>
+      <p id="streakMsg">きょうもがんばろう！</p>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetToday()">🔄 きょうのチェックをリセット</button>
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" style="display:flex;position:fixed;inset:0;z-index:2000;background:rgba(255,249,240,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+  <div style="font-size:48px;animation:spin 1s linear infinite">⭐</div>
+  <div style="font-weight:800;color:#1E293B;font-size:16px">よみこみちゅう…</div>
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+<!-- Error toast -->
+<div id="errorMsg" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#FCA5A5;color:#7F1D1D;padding:10px 20px;border-radius:16px;font-weight:700;font-size:14px;z-index:3000;box-shadow:0 4px 16px rgba(0,0,0,0.1);"></div>
+
+<script>
+const TASKS = [
+  { id: 'bath',      name: 'お風呂',      icon: '🛁', color: '#BFDBFE', sub: 'きれいになろう！' },
+  { id: 'piano',     name: 'ピアノ',      icon: '🎹', color: '#DDD6FE', sub: 'れんしゅうがんばれ！' },
+  { id: 'prep',      name: 'あしたのじゅんび', icon: '🎒', color: '#FED7AA', sub: 'わすれものなし！' },
+  { id: 'homework',  name: 'しゅくだい',  icon: '📝', color: '#FEF08A', sub: 'ていねいにやろう！' },
+  { id: 'challenge', name: 'チャレンジタッチ', icon: '📱', color: '#BBF7D0', sub: '1レッスンやってみよう！' },
+  { id: 'topclass',  name: 'トップクラス', icon: '🏆', color: '#FECDD3', sub: 'むずかしい問題にちょうせん！' },
+];
+
+const BADGES = [
+  { id: 'first_done',   name: 'はじめての1こ', emoji: '🌱', desc: '1つクリア', req: s => s.totalChecks >= 1 },
+  { id: 'half_done',    name: 'はんぶんクリア', emoji: '⚡', desc: '3つクリア', req: s => s.todayDone >= 3 },
+  { id: 'all_done',     name: 'ぜんぶクリア', emoji: '👑', desc: '全6つクリア', req: s => s.todayDone >= 6 },
+  { id: 'streak3',      name: '3にちれんぞく', emoji: '🔥', desc: '3日連続', req: s => s.streak >= 3 },
+  { id: 'streak7',      name: '1しゅうかん！', emoji: '🌟', desc: '7日連続', req: s => s.streak >= 7 },
+  { id: 'piano_master', name: 'ピアノマスター', emoji: '🎵', desc: 'ピアノ10回', req: s => (s.taskCounts?.piano || 0) >= 10 },
+];
+
+// --- Supabase config ---
+const SUPABASE_URL = 'https://rggpwqejwgdnzkmnwkom.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jESS04P2DnO7Vbx7jn4ScA_6d_MVYX8';
+
+async function sbFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+// --- State ---
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// In-memory state (synced from Supabase)
+let state = { days: {}, streak: 0, lastDate: null, totalChecks: 0, taskCounts: {} };
+
+function getToday(s) {
+  const k = todayKey();
+  if (!s.days[k]) s.days[k] = {};
+  return s.days[k];
+}
+
+function updateStreakFromDays(s) {
+  // Compute streak from known days
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const dayData = s.days[key] || {};
+    const allDone = TASKS.every(t => dayData[t.id]);
+    if (!allDone) break;
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  s.streak = streak;
+}
+
+async function loadFromSupabase() {
+  showLoading(true);
+  try {
+    // Load all records
+    const records = await sbFetch('todo_records?select=*&order=date.desc');
+    state.days = {};
+    state.taskCounts = {};
+    state.totalChecks = 0;
+    for (const r of records) {
+      if (!state.days[r.date]) state.days[r.date] = {};
+      state.days[r.date][r.task_id] = r.done;
+      if (r.done) {
+        state.totalChecks++;
+        state.taskCounts[r.task_id] = (state.taskCounts[r.task_id] || 0) + 1;
+      }
+    }
+    updateStreakFromDays(state);
+  } catch(e) {
+    console.error('Supabase load error:', e);
+    showError('データの読み込みに失敗しました 😢');
+  }
+  showLoading(false);
+}
+
+async function saveToSupabase(taskId, done) {
+  const date = todayKey();
+  try {
+    await sbFetch('todo_records', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates,return=representation',
+      headers: { 'Prefer': 'resolution=merge-duplicates' },
+      body: JSON.stringify({
+        date,
+        task_id: taskId,
+        done,
+        checked_at: done ? new Date().toISOString() : null,
+      }),
+    });
+  } catch(e) {
+    console.error('Supabase save error:', e);
+    showError('保存に失敗しました 😢');
+  }
+}
+
+async function resetTodaySupabase() {
+  const date = todayKey();
+  try {
+    await sbFetch(`todo_records?date=eq.${date}`, {
+      method: 'DELETE',
+      prefer: '',
+    });
+  } catch(e) {
+    console.error('Reset error:', e);
+  }
+}
+
+function showLoading(on) {
+  document.getElementById('loadingOverlay').style.display = on ? 'flex' : 'none';
+}
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+// --- Render ---
+function render() {
+  const today = getToday(state);
+  const doneCount = Object.values(today).filter(Boolean).length;
+
+  // Date
+  const now = new Date();
+  const weekdays = ['にちようび','げつようび','かようび','すいようび','もくようび','きんようび','どようび'];
+  document.getElementById('dateBadge').textContent =
+    `${now.getMonth()+1}がつ ${now.getDate()}にち（${weekdays[now.getDay()]}）`;
+
+  // Progress
+  const pct = Math.round(doneCount / TASKS.length * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${doneCount} / ${TASKS.length} おわった`;
+
+  // Tasks
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+  TASKS.forEach((t, i) => {
+    const done = !!today[t.id];
+    const card = document.createElement('div');
+    card.className = 'task-card' + (done ? ' done' : '');
+    card.style.animationDelay = (i * 0.07) + 's';
+    card.innerHTML = `
+      <div class="task-icon" style="background:${t.color}">${t.icon}</div>
+      <div class="task-info">
+        <div class="task-name">${t.name}</div>
+        <div class="task-sub">${t.sub}</div>
+      </div>
+      <div class="check-circle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8L6.5 11.5L13 4.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    `;
+    card.addEventListener('click', () => toggleTask(t.id, card));
+    list.appendChild(card);
+  });
+
+  // Complete banner
+  const banner = document.getElementById('completeBanner');
+  banner.className = 'complete-banner' + (doneCount === TASKS.length ? ' show' : '');
+
+  // Streak
+  document.getElementById('streakCount').textContent = state.streak || 0;
+  document.getElementById('streakMsg').textContent =
+    state.streak >= 7 ? 'すごい！1しゅうかんつづいてる！' :
+    state.streak >= 3 ? 'いいかんじ！つづけよう！' :
+    'きょうもがんばろう！';
+
+  // Badges
+  const todayStats = { todayDone: doneCount, streak: state.streak || 0, totalChecks: state.totalChecks || 0, taskCounts: state.taskCounts || {} };
+  const badgeGrid = document.getElementById('badgesGrid');
+  badgeGrid.innerHTML = '';
+  BADGES.forEach(b => {
+    const unlocked = b.req(todayStats);
+    const el = document.createElement('div');
+    el.className = 'badge-item' + (unlocked ? '' : ' locked');
+    el.innerHTML = `
+      <span class="badge-emoji">${b.emoji}</span>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    `;
+    badgeGrid.appendChild(el);
+  });
+}
+
+async function toggleTask(id, card) {
+  const today = getToday(state);
+  const wasDone = !!today[id];
+  const newDone = !wasDone;
+  today[id] = newDone;
+
+  if (newDone) {
+    state.totalChecks = (state.totalChecks || 0) + 1;
+    state.taskCounts = state.taskCounts || {};
+    state.taskCounts[id] = (state.taskCounts[id] || 0) + 1;
+    spawnStars(card);
+    const doneCount = Object.values(today).filter(Boolean).length;
+    if (doneCount === TASKS.length) {
+      updateStreakFromDays(state);
+      setTimeout(() => launchConfetti(), 200);
+    }
+  } else {
+    state.totalChecks = Math.max(0, (state.totalChecks || 1) - 1);
+    state.taskCounts[id] = Math.max(0, (state.taskCounts[id] || 1) - 1);
+  }
+
+  render();
+  await saveToSupabase(id, newDone);
+}
+
+async function resetToday() {
+  if (!confirm('きょうのチェックをリセットしますか？')) return;
+  const k = todayKey();
+  state.days[k] = {};
+  render();
+  await resetTodaySupabase();
+}
+
+// --- Confetti ---
+function launchConfetti() {
+  const colors = ['#FCA5A5','#FDE68A','#86EFAC','#7DD3FC','#C4B5FD','#FDBA74'];
+  const container = document.getElementById('confettiContainer');
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left: ${Math.random()*100}vw;
+      top: -10px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay: ${Math.random()*0.8}s;
+      animation-duration: ${1.2 + Math.random()*0.8}s;
+      transform: rotate(${Math.random()*360}deg);
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+    `;
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 2500);
+  }
+}
+
+// --- Stars on check ---
+function spawnStars(el) {
+  const rect = el.getBoundingClientRect();
+  const emojis = ['⭐','✨','🌟','💫'];
+  for (let i = 0; i < 3; i++) {
+    const star = document.createElement('div');
+    star.className = 'star-pop';
+    star.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    star.style.cssText = `
+      left: ${rect.left + rect.width*0.3 + Math.random()*rect.width*0.4}px;
+      top: ${rect.top}px;
+      animation-delay: ${i*0.1}s;
+    `;
+    document.body.appendChild(star);
+    setTimeout(() => star.remove(), 1200);
+  }
+}
+
+// --- Floating bubbles ---
+function createBubbles() {
+  const container = document.getElementById('bubbles');
+  const colors = ['#7DD3FC','#FDE68A','#86EFAC','#FCA5A5','#C4B5FD','#FDBA74'];
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 20 + Math.random() * 60;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${10+Math.random()*15}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(b);
+  }
+}
+
+createBubbles();
+loadFromSupabase().then(() => render());
+</script>
+</body>
+</html>
