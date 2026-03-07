@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>きょうのおしごと ✨</title>
+<title>きょうのミッション！🏆</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -267,8 +267,8 @@
 
 <div class="container">
   <div class="header">
-    <span class="header-emoji">⭐</span>
-    <h1>きょうのおしごと</h1>
+    <span class="header-emoji">🏆</span>
+    <h1>きょうのミッション！</h1>
     <div class="date-badge" id="dateBadge"></div>
   </div>
 
@@ -306,7 +306,7 @@
 <!-- Loading overlay -->
 <div id="loadingOverlay" style="display:flex;position:fixed;inset:0;z-index:2000;background:rgba(255,249,240,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
   <div style="font-size:48px;animation:spin 1s linear infinite">⭐</div>
-  <div style="font-weight:800;color:#1E293B;font-size:16px">よみこみちゅう…</div>
+  <div style="font-weight:800;color:#1E293B;font-size:16px">ミッションよみこみちゅう…</div>
 </div>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
@@ -321,6 +321,7 @@ const TASKS = [
   { id: 'homework',  name: 'しゅくだい',  icon: '📝', color: '#FEF08A', sub: 'ていねいにやろう！' },
   { id: 'challenge', name: 'チャレンジタッチ', icon: '📱', color: '#BBF7D0', sub: '1レッスンやってみよう！' },
   { id: 'topclass',  name: 'トップクラス', icon: '🏆', color: '#FECDD3', sub: 'むずかしい問題にちょうせん！' },
+  { id: 'balltouch', name: 'ボールタッチ', icon: '⚽', color: '#BBF7D0', sub: 'じゅくれんにはじしゅれんあるのみ！' },
 ];
 
 const BADGES = [
