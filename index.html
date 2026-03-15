@@ -1,137 +1,3 @@
-
-子供のサッカークラブとは別に有志で活動しています。日程、大会情報、大会情報ファイル、子供の名前、参加可否を確認できるようなWebアプリが作りたいです。利用者は15人程度です。Githubにおいてやりたいです。
-
-Mar 13
-いくつか確認させてください！
-
-どんなアプリにするか決めるために教えてください。
-
-選択肢を選んで教えていただけますか？
-
-ログイン方法：パスワードなし（URL知ってる人だけ）/ 共通パスワード1つ / Googleログイン
-データ保存：Supabase（前回と同様・無料）/ Googleスプレッドシート連携 / まだ決めていない
-大会情報ファイル：PDF / 画像（JPG/PNG）/ Excel / リンク（URL）のみ
-Q: ログイン・認証はどうしますか？
-A: パスワードなし（URLを知っている人なら誰でも）
-
-Q: バックエンド（データ保存）はどうしますか？
-A: Googleスプレッドシート連携
-
-Q: 大会情報ファイルはどんな形式を想定していますか？（該当するものをすべて選択）
-A: Google Driveにファイルはおいてそのリンクを貼るだけでOK
-
-Mar 13
-わかりました！構成が決まりました。
-
-技術スタック：
-
-フロントエンド：HTML/JS（シングルファイル）→ GitHub Pages
-データ：Google スプレッドシート（GAS経由でAPI化）
-ファイル：Google Drive リンクを貼るだけ
-認証：なし（URLのみ）
-まずフロントエンドのHTMLを作り、次にGoogle Apps Script（GAS）のセットアップ手順を説明します。
-
-
-Viewed a file, created a file, read a file
-Viewed a file, created a file, read a file
-完成しました！ダウンロードして試せます。
-
-機能概要
-📅 日程・参加タブ
-
-イベント一覧（試合・練習・大会・その他）
-タップで展開 → 場所・時間・資料リンク・メモ表示
-メンバーカードをタップするだけで参加状況を切り替え（❓→✅→❌→❓）
-👦 メンバータブ
-
-子供の名前・学年・保護者名を登録
-🔧 設定タブ
-
-チーム名・GAS URLを設定
-GitHub Pages + Google Sheets セットアップ手順
-① GitHubにリポジトリ作成
-
-新規リポジトリ → index.html をアップロード
-Settings → Pages → Branch: main → / (root) → Save
-② Googleスプレッドシート + GASの設定
-
-新しいスプレッドシートを作成
-「拡張機能」→「Apps Script」を開く
-アプリ内の「設定」タブ→「GASコード」からコードをコピーして貼り付け
-「デプロイ」→「新しいデプロイ」→「ウェブアプリ」→アクセス：全員
-発行されたURLをアプリの「設定」タブに入力して保存
-③ 完了！ スプレッドシートにシート（events/members/attendance）が自動作成されます。
-
-何か追加したい機能（コメント欄・出欠のLINE通知・月カレンダー表示など）があれば教えてください！
-
-Index
-Code · HTML 
-ありがとう
-年間の日程だけでも先に入れたかったりするけどそれはSpread Sheet上に入れちゃえば良い？
-
-Mar 15
-はい、そのままスプレッドシートに直接入れるのが一番早いです！
-
-eventsシートの列順
-
-id | date | type | title | location | time | fileUrl | note
-入力例：
-
-1748736000000 | 2025-06-01 | match | 有志練習試合 vs ○○FC | 世田谷公園 | 09:00〜12:00 | |
-ポイント
-
-id は重複しなければ何でもOK（連番 1, 2, 3… でも大丈夫です）
-date は 2025-06-01 形式で入力
-type は match / practice / tournament / other のいずれか
-fileUrl と note は空欄でOK
-まとめて入れたい場合はスプレッドシートが断然楽なので、年間分をドーンと入力してしまってください。アプリ側から「🔄 更新」ボタンを押せばそのまま反映されます。
-
-ちょっとやってみる
-
-Mar 15
-ぜひ！やってみて何かあれば気軽に聞いてください 😊
-
-詰まりやすいポイントとしてはGASのデプロイ時に「アクセスできるユーザー」を全員にするのを忘れがちなので、そこだけ注意を。
-
-この画面で参加、欠席を選べるようにして欲しいのとクリックした瞬間前の画面に戻る仕様をやめて欲しい。で前の画面に戻るボタンは欲しい。
-
-7:48 AM
-了解です！2点ですね。
-
-参加/欠席を選ぶUI → タップのたびに変わる方式をやめて、✅❌ボタンを並べて選ぶ形に
-クリックで閉じない → 展開したまま維持、「閉じる」ボタンを追加
-修正します！
-
-
-Viewed 4 files
-Viewed 4 files
-変更箇所が明確になりました。修正します。
-
-
-Edited 4 files
-Edited 4 files
-次に参加/欠席ボタンUIを更新します。
-
-
-Edited a file, read a file
-Edited a file, read a file
-修正しました！変更点まとめ：
-
-参加確認 → タップで循環する方式をやめて、✅❌❓の3つのボタンを並べて明示的に選択する形に
-展開したまま維持 → ボタンを押しても画面が閉じなくなりました（参加状況はその場で更新）
-▲ 閉じるボタン → 詳細の一番下に追加
-ヘッダー部分タップ → 展開/折りたたみ、› が回転して状態を視覚的に表示
-Index
-Code · HTML 
-
-
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
-Index · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -140,7 +6,7 @@ Copy
 <title>⚽ チーム管理</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Bebas+Neue&display=swap');
- 
+
   :root {
     --green: #1a7a3c;
     --green-light: #2da854;
@@ -155,16 +21,16 @@ Copy
     --card: #ffffff;
     --shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
- 
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   body {
     font-family: 'Noto Sans JP', sans-serif;
     background: var(--light);
     color: #1a2e1e;
     min-height: 100vh;
   }
- 
+
   /* HEADER */
   header {
     background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 60%, var(--green-light) 100%);
@@ -212,7 +78,7 @@ Copy
     transition: background 0.2s;
   }
   .btn-admin:hover { background: rgba(255,255,255,0.25); }
- 
+
   /* NAV TABS */
   nav {
     background: var(--green-dark);
@@ -244,14 +110,14 @@ Copy
     color: rgba(255,255,255,0.9);
     background: rgba(255,255,255,0.05);
   }
- 
+
   /* MAIN */
   main { padding: 16px; max-width: 800px; margin: 0 auto; }
- 
+
   /* SECTION */
   .section { display: none; }
   .section.active { display: block; }
- 
+
   /* CARDS */
   .card {
     background: var(--card);
@@ -269,7 +135,7 @@ Copy
     align-items: center;
     gap: 6px;
   }
- 
+
   /* EVENT LIST */
   .event-item {
     border: 1px solid #e0ebe3;
@@ -310,7 +176,7 @@ Copy
   .badge-practice { background: #d1fae5; color: #065f46; }
   .badge-tournament { background: #ede9fe; color: #5b21b6; }
   .badge-other { background: #e5e7eb; color: #4b5563; }
- 
+
   /* EVENT DETAIL (expanded) */
   .event-detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0ebe3; }
   .event-item.expanded .event-detail { display: block; }
@@ -319,7 +185,7 @@ Copy
   .event-detail-value { color: #1a2e1e; flex: 1; word-break: break-all; }
   .event-detail-value a { color: var(--green); text-decoration: none; }
   .event-detail-value a:hover { text-decoration: underline; }
- 
+
   /* ATTENDANCE */
   .attendance-section { margin-top: 12px; }
   .attendance-title { font-size: 12px; font-weight: 700; color: var(--grey); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
@@ -340,7 +206,7 @@ Copy
   .att-count.ok { background: #d1fae5; color: #065f46; }
   .att-count.ng { background: #fee2e2; color: #991b1b; }
   .att-count.pending { background: #f3f4f6; color: #6b7280; }
- 
+
   .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
   .player-card {
     border: 2px solid #e5e7eb;
@@ -371,7 +237,7 @@ Copy
   .att-btn.selected-ok { border-color: #34d399; background: #d1fae5; }
   .att-btn.selected-ng { border-color: #f87171; background: #fee2e2; }
   .att-btn:hover { transform: scale(1.1); }
- 
+
   /* FORMS */
   .form-group { margin-bottom: 14px; }
   label { display: block; font-size: 12px; font-weight: 700; color: var(--grey); margin-bottom: 5px; }
@@ -391,7 +257,7 @@ Copy
     border-color: var(--green-light);
   }
   textarea { resize: vertical; min-height: 70px; }
- 
+
   .btn {
     padding: 11px 20px;
     border-radius: 8px;
@@ -418,7 +284,7 @@ Copy
   .btn-sm { font-size: 12px; padding: 6px 12px; }
   .btn-ghost { background: transparent; border: 1.5px solid #d1d5db; color: #4b5563; }
   .btn-ghost:hover { background: var(--light); }
- 
+
   /* MEMBER LIST */
   .member-item {
     display: flex;
@@ -432,7 +298,7 @@ Copy
   }
   .member-name { font-weight: 700; font-size: 14px; }
   .member-meta { font-size: 12px; color: var(--grey); }
- 
+
   /* ADMIN OVERLAY */
   .overlay {
     display: none;
@@ -469,7 +335,7 @@ Copy
     margin-top: 16px;
   }
   .modal-actions .btn { flex: 1; }
- 
+
   /* SETTINGS */
   .settings-row {
     display: flex;
@@ -480,7 +346,7 @@ Copy
     font-size: 14px;
   }
   .settings-row:last-child { border-bottom: none; }
- 
+
   /* TOAST */
   .toast {
     position: fixed;
@@ -498,7 +364,7 @@ Copy
     white-space: nowrap;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
- 
+
   /* CONFIG NOTICE */
   .config-notice {
     background: #fffbeb;
@@ -518,7 +384,7 @@ Copy
     font-family: monospace;
     font-size: 12px;
   }
- 
+
   /* EMPTY STATE */
   .empty-state {
     text-align: center;
@@ -527,7 +393,7 @@ Copy
   }
   .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
   .empty-state p { font-size: 14px; }
- 
+
   /* STATUS PILL */
   .status-pill {
     display: inline-block;
@@ -540,13 +406,13 @@ Copy
   .pill-ok { background: #d1fae5; color: #065f46; }
   .pill-ng { background: #fee2e2; color: #991b1b; }
   .pill-pending { background: #f3f4f6; color: #6b7280; }
- 
+
   /* RESPONSIVE */
   @media (max-width: 480px) {
     .player-grid { grid-template-columns: repeat(2, 1fr); }
     .logo-text { font-size: 18px; }
   }
- 
+
   .loading {
     text-align: center;
     padding: 30px;
@@ -563,13 +429,13 @@ Copy
     margin: 0 auto 10px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
- 
+
   .row { display: flex; gap: 8px; }
   .row .form-group { flex: 1; }
 </style>
 </head>
 <body>
- 
+
 <!-- HEADER -->
 <header>
   <div class="header-inner">
@@ -590,17 +456,17 @@ Copy
     <div class="tab" onclick="showTab('settings')" id="tab-settings">🔧 設定</div>
   </nav>
 </header>
- 
+
 <main>
- 
+
   <!-- ======================== SCHEDULE TAB ======================== -->
   <section class="section active" id="section-schedule">
- 
+
     <div id="configNotice" class="config-notice" style="display:none">
       <strong>⚠ セットアップが必要です</strong>
       「設定」タブでGoogle Apps ScriptのURLを入力してください。入力後、データの読み込みが始まります。
     </div>
- 
+
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <div style="font-size:13px; color:var(--grey);">直近・今後のイベント</div>
       <div style="display:flex; gap:6px;">
@@ -608,13 +474,13 @@ Copy
         <button class="btn btn-primary btn-sm" onclick="openEventModal()">＋ 追加</button>
       </div>
     </div>
- 
+
     <div id="eventList">
       <div class="loading"><div class="spinner"></div>読み込み中...</div>
     </div>
- 
+
   </section>
- 
+
   <!-- ======================== MEMBERS TAB ======================== -->
   <section class="section" id="section-members">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -625,26 +491,26 @@ Copy
       <div class="loading"><div class="spinner"></div>読み込み中...</div>
     </div>
   </section>
- 
+
   <!-- ======================== SETTINGS TAB ======================== -->
   <section class="section" id="section-settings">
     <div class="card">
       <div class="card-title">🔧 アプリ設定</div>
- 
+
       <div class="form-group">
         <label>チーム名</label>
         <input type="text" id="settingTeamName" placeholder="例: 有志サッカーチーム" />
       </div>
- 
+
       <div class="form-group">
         <label>Google Apps Script URL</label>
         <input type="url" id="settingGasUrl" placeholder="https://script.google.com/macros/s/.../exec" />
         <div style="font-size:11px; color:var(--grey); margin-top:4px;">GASのウェブアプリURLを貼り付けてください</div>
       </div>
- 
+
       <button class="btn btn-primary" onclick="saveSettings()">💾 設定を保存</button>
     </div>
- 
+
     <div class="card" style="margin-top:12px;">
       <div class="card-title">📋 GASセットアップ手順</div>
       <div style="font-size:13px; line-height:1.9; color:#374151;">
@@ -661,11 +527,11 @@ Copy
       </div>
     </div>
   </section>
- 
+
 </main>
- 
+
 <!-- ==================== MODALS ==================== -->
- 
+
 <!-- EVENT MODAL -->
 <div class="overlay" id="eventOverlay">
   <div class="modal">
@@ -715,7 +581,7 @@ Copy
     </div>
   </div>
 </div>
- 
+
 <!-- MEMBER MODAL -->
 <div class="overlay" id="memberOverlay">
   <div class="modal">
@@ -751,7 +617,7 @@ Copy
     </div>
   </div>
 </div>
- 
+
 <!-- ADMIN MODAL (GAS code) -->
 <div class="overlay" id="gasCodeOverlay">
   <div class="modal">
@@ -764,7 +630,7 @@ Copy
     </div>
   </div>
 </div>
- 
+
 <!-- ADMIN LOCK MODAL -->
 <div class="overlay" id="adminOverlay">
   <div class="modal">
@@ -780,10 +646,10 @@ Copy
     </div>
   </div>
 </div>
- 
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
- 
+
 <script>
 // =====================================================
 // STATE
@@ -797,26 +663,26 @@ let state = {
   editingEventId: null,
   editingMemberId: null,
 };
- 
+
 // GAS CODE TEMPLATE
 const GAS_CODE = `// Google Apps Script - チーム管理アプリ用
 // シート名: events, members, attendance
- 
+
 const SS = SpreadsheetApp.getActiveSpreadsheet();
- 
+
 function doGet(e) {
   return handleRequest(e);
 }
- 
+
 function doPost(e) {
   return handleRequest(e);
 }
- 
+
 function handleRequest(e) {
   const p = e.parameter || {};
   const action = p.action || (e.postData && JSON.parse(e.postData.contents || '{}').action);
   const body = e.postData ? JSON.parse(e.postData.contents || '{}') : p;
- 
+
   let result;
   try {
     switch(body.action || p.action) {
@@ -831,12 +697,12 @@ function handleRequest(e) {
   } catch(err) {
     result = {error: err.message};
   }
- 
+
   return ContentService
     .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
 }
- 
+
 function getAll() {
   return {
     events: sheetToArray('events'),
@@ -844,7 +710,7 @@ function getAll() {
     attendance: sheetToArray('attendance'),
   };
 }
- 
+
 function sheetToArray(name) {
   const sh = getOrCreateSheet(name);
   const data = sh.getDataRange().getValues();
@@ -856,7 +722,7 @@ function sheetToArray(name) {
     return obj;
   });
 }
- 
+
 function getOrCreateSheet(name) {
   let sh = SS.getSheetByName(name);
   if (!sh) {
@@ -870,7 +736,7 @@ function getOrCreateSheet(name) {
   }
   return sh;
 }
- 
+
 function saveEvent(data) {
   const sh = getOrCreateSheet('events');
   const rows = sh.getDataRange().getValues();
@@ -887,7 +753,7 @@ function saveEvent(data) {
   }
   return {ok: true, id};
 }
- 
+
 function saveMember(data) {
   const sh = getOrCreateSheet('members');
   const rows = sh.getDataRange().getValues();
@@ -902,7 +768,7 @@ function saveMember(data) {
   }
   return {ok: true, id};
 }
- 
+
 function setAttendance(data) {
   const sh = getOrCreateSheet('attendance');
   const rows = sh.getDataRange().getValues();
@@ -915,7 +781,7 @@ function setAttendance(data) {
   }
   return {ok: true};
 }
- 
+
 function deleteRow(sheetName, id) {
   const sh = getOrCreateSheet(sheetName);
   const rows = sh.getDataRange().getValues();
@@ -924,7 +790,7 @@ function deleteRow(sheetName, id) {
   return {ok: true};
 }
 `;
- 
+
 // =====================================================
 // INIT
 // =====================================================
@@ -939,7 +805,7 @@ function init() {
   document.getElementById('settingTeamName').value = state.teamName;
   document.getElementById('settingGasUrl').value = state.gasUrl;
   document.getElementById('gasCodeText').value = GAS_CODE;
- 
+
   if (!state.gasUrl) {
     document.getElementById('configNotice').style.display = 'block';
     renderEvents();
@@ -948,7 +814,7 @@ function init() {
     loadData();
   }
 }
- 
+
 // =====================================================
 // API
 // =====================================================
@@ -972,7 +838,7 @@ async function gasRequest(body) {
     }
   }
 }
- 
+
 async function loadData() {
   showToast('データを読み込み中...');
   const data = await gasRequest({action: 'getAll'});
@@ -984,7 +850,7 @@ async function loadData() {
   renderMembers();
   showToast('✅ 更新しました');
 }
- 
+
 // =====================================================
 // TABS
 // =====================================================
@@ -994,14 +860,14 @@ function showTab(name) {
   document.getElementById('section-' + name).classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
 }
- 
+
 // =====================================================
 // EVENTS
 // =====================================================
 const TYPE_LABELS = {match:'試合', practice:'練習', tournament:'大会', other:'その他'};
 const TYPE_CLASSES = {match:'badge-match', practice:'badge-practice', tournament:'badge-tournament', other:'badge-other'};
 const WEEKDAYS = ['日','月','火','水','木','金','土'];
- 
+
 function renderEvents() {
   const container = document.getElementById('eventList');
   const sorted = [...state.events].sort((a,b) => a.date < b.date ? -1 : 1);
@@ -1010,7 +876,7 @@ function renderEvents() {
     container.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><p>イベントがまだありません<br>「＋ 追加」で登録しましょう</p></div>`;
     return;
   }
- 
+
   container.innerHTML = sorted.map(ev => {
     const d = new Date(ev.date);
     const month = (d.getMonth()+1) + '月';
@@ -1058,7 +924,7 @@ function renderEvents() {
             ${renderPlayerCards(evIdSafe)}
           </div>
         </div>
- 
+
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
           <button class="btn btn-ghost btn-sm" onclick="toggleEvent('${evIdSafe}')">▲ 閉じる</button>
           <button class="btn btn-ghost btn-sm" onclick="openEventModal('${evIdSafe}')">✏ 編集</button>
@@ -1067,7 +933,7 @@ function renderEvents() {
     </div>`;
   }).join('');
 }
- 
+
 function toggleEvent(id) {
   const el = document.getElementById('evitem-' + id);
   el.classList.toggle('expanded');
@@ -1076,7 +942,7 @@ function toggleEvent(id) {
     c.style.transform = el.classList.contains('expanded') ? 'rotate(90deg)' : '';
   });
 }
- 
+
 function getAttendanceSummary(eventId) {
   const total = state.members.length;
   const eventAtt = state.attendance.filter(a => a.eventId == eventId);
@@ -1085,7 +951,7 @@ function getAttendanceSummary(eventId) {
   const pending = total - ok - ng;
   return {ok, ng, pending};
 }
- 
+
 function renderPlayerCards(eventId) {
   if (state.members.length === 0) return '<div style="font-size:12px;color:var(--grey);">メンバーが登録されていません</div>';
   return state.members.map(m => {
@@ -1101,16 +967,16 @@ function renderPlayerCards(eventId) {
     </div>`;
   }).join('');
 }
- 
+
 async function setAttendanceUI(eventId, memberId, status) {
   const att = state.attendance.find(a => a.eventId == eventId && a.memberId == memberId);
   if (att) att.status = status;
   else state.attendance.push({eventId, memberId, status});
- 
+
   // partial re-render: just the grid and summary, don't collapse
   const grid = document.getElementById('playergrid-' + eventId);
   if (grid) grid.innerHTML = renderPlayerCards(eventId);
- 
+
   // update summary counts in the item
   const att2 = getAttendanceSummary(eventId);
   const item = document.getElementById('evitem-' + eventId);
@@ -1122,10 +988,10 @@ async function setAttendanceUI(eventId, memberId, status) {
     const headerSummary = item.querySelector('.event-info span[style]');
     if (headerSummary) headerSummary.textContent = `✅${att2.ok} ❌${att2.ng} ❓${att2.pending}`;
   }
- 
+
   gasRequest({action: 'setAttendance', eventId, memberId, status});
 }
- 
+
 // =====================================================
 // EVENT MODAL
 // =====================================================
@@ -1145,7 +1011,7 @@ function openEventModal(id) {
   document.getElementById('eventOverlay').classList.add('show');
 }
 function closeEventModal() { document.getElementById('eventOverlay').classList.remove('show'); }
- 
+
 async function saveEvent() {
   const data = {
     action: 'saveEvent',
@@ -1169,7 +1035,7 @@ async function saveEvent() {
   showToast('💾 保存しました');
   await gasRequest(data);
 }
- 
+
 async function deleteEvent() {
   if (!confirm('このイベントを削除しますか？')) return;
   const id = document.getElementById('eventId').value;
@@ -1180,7 +1046,7 @@ async function deleteEvent() {
   showToast('🗑 削除しました');
   await gasRequest({action: 'deleteEvent', id});
 }
- 
+
 // =====================================================
 // MEMBERS
 // =====================================================
@@ -1200,7 +1066,7 @@ function renderMembers() {
     </div>
   `).join('');
 }
- 
+
 function openMemberModal(id) {
   const m = id ? state.members.find(m => m.id == id) : null;
   document.getElementById('memberId').value = m ? m.id : '';
@@ -1211,7 +1077,7 @@ function openMemberModal(id) {
   document.getElementById('memberOverlay').classList.add('show');
 }
 function closeMemberModal() { document.getElementById('memberOverlay').classList.remove('show'); }
- 
+
 async function saveMember() {
   const data = {
     action: 'saveMember',
@@ -1229,7 +1095,7 @@ async function saveMember() {
   showToast('💾 保存しました');
   await gasRequest(data);
 }
- 
+
 async function deleteMember() {
   if (!confirm('このメンバーを削除しますか？')) return;
   const id = document.getElementById('memberId').value;
@@ -1239,7 +1105,7 @@ async function deleteMember() {
   showToast('🗑 削除しました');
   await gasRequest({action: 'deleteMember', id});
 }
- 
+
 // =====================================================
 // SETTINGS
 // =====================================================
@@ -1254,7 +1120,7 @@ function saveSettings() {
     loadData();
   }
 }
- 
+
 // =====================================================
 // ADMIN
 // =====================================================
@@ -1264,7 +1130,7 @@ function enterAdmin() {
   closeAdminModal();
   showTab('settings');
 }
- 
+
 function showGasCode() {
   document.getElementById('gasCodeOverlay').classList.add('show');
 }
@@ -1272,7 +1138,7 @@ function closeGasCodeModal() { document.getElementById('gasCodeOverlay').classLi
 function copyGasCode() {
   navigator.clipboard.writeText(GAS_CODE).then(() => showToast('📋 コピーしました'));
 }
- 
+
 // =====================================================
 // TOAST
 // =====================================================
@@ -1284,14 +1150,14 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
- 
+
 // =====================================================
 // OVERLAY CLOSE ON BG CLICK
 // =====================================================
 document.querySelectorAll('.overlay').forEach(ov => {
   ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
 });
- 
+
 // =====================================================
 // START
 // =====================================================
@@ -1299,4 +1165,3 @@ init();
 </script>
 </body>
 </html>
- 
