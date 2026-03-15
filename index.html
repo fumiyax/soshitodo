@@ -1,619 +1,1302 @@
+
+子供のサッカークラブとは別に有志で活動しています。日程、大会情報、大会情報ファイル、子供の名前、参加可否を確認できるようなWebアプリが作りたいです。利用者は15人程度です。Githubにおいてやりたいです。
+
+Mar 13
+いくつか確認させてください！
+
+どんなアプリにするか決めるために教えてください。
+
+選択肢を選んで教えていただけますか？
+
+ログイン方法：パスワードなし（URL知ってる人だけ）/ 共通パスワード1つ / Googleログイン
+データ保存：Supabase（前回と同様・無料）/ Googleスプレッドシート連携 / まだ決めていない
+大会情報ファイル：PDF / 画像（JPG/PNG）/ Excel / リンク（URL）のみ
+Q: ログイン・認証はどうしますか？
+A: パスワードなし（URLを知っている人なら誰でも）
+
+Q: バックエンド（データ保存）はどうしますか？
+A: Googleスプレッドシート連携
+
+Q: 大会情報ファイルはどんな形式を想定していますか？（該当するものをすべて選択）
+A: Google Driveにファイルはおいてそのリンクを貼るだけでOK
+
+Mar 13
+わかりました！構成が決まりました。
+
+技術スタック：
+
+フロントエンド：HTML/JS（シングルファイル）→ GitHub Pages
+データ：Google スプレッドシート（GAS経由でAPI化）
+ファイル：Google Drive リンクを貼るだけ
+認証：なし（URLのみ）
+まずフロントエンドのHTMLを作り、次にGoogle Apps Script（GAS）のセットアップ手順を説明します。
+
+
+Viewed a file, created a file, read a file
+Viewed a file, created a file, read a file
+完成しました！ダウンロードして試せます。
+
+機能概要
+📅 日程・参加タブ
+
+イベント一覧（試合・練習・大会・その他）
+タップで展開 → 場所・時間・資料リンク・メモ表示
+メンバーカードをタップするだけで参加状況を切り替え（❓→✅→❌→❓）
+👦 メンバータブ
+
+子供の名前・学年・保護者名を登録
+🔧 設定タブ
+
+チーム名・GAS URLを設定
+GitHub Pages + Google Sheets セットアップ手順
+① GitHubにリポジトリ作成
+
+新規リポジトリ → index.html をアップロード
+Settings → Pages → Branch: main → / (root) → Save
+② Googleスプレッドシート + GASの設定
+
+新しいスプレッドシートを作成
+「拡張機能」→「Apps Script」を開く
+アプリ内の「設定」タブ→「GASコード」からコードをコピーして貼り付け
+「デプロイ」→「新しいデプロイ」→「ウェブアプリ」→アクセス：全員
+発行されたURLをアプリの「設定」タブに入力して保存
+③ 完了！ スプレッドシートにシート（events/members/attendance）が自動作成されます。
+
+何か追加したい機能（コメント欄・出欠のLINE通知・月カレンダー表示など）があれば教えてください！
+
+Index
+Code · HTML 
+ありがとう
+年間の日程だけでも先に入れたかったりするけどそれはSpread Sheet上に入れちゃえば良い？
+
+Mar 15
+はい、そのままスプレッドシートに直接入れるのが一番早いです！
+
+eventsシートの列順
+
+id | date | type | title | location | time | fileUrl | note
+入力例：
+
+1748736000000 | 2025-06-01 | match | 有志練習試合 vs ○○FC | 世田谷公園 | 09:00〜12:00 | |
+ポイント
+
+id は重複しなければ何でもOK（連番 1, 2, 3… でも大丈夫です）
+date は 2025-06-01 形式で入力
+type は match / practice / tournament / other のいずれか
+fileUrl と note は空欄でOK
+まとめて入れたい場合はスプレッドシートが断然楽なので、年間分をドーンと入力してしまってください。アプリ側から「🔄 更新」ボタンを押せばそのまま反映されます。
+
+ちょっとやってみる
+
+Mar 15
+ぜひ！やってみて何かあれば気軽に聞いてください 😊
+
+詰まりやすいポイントとしてはGASのデプロイ時に「アクセスできるユーザー」を全員にするのを忘れがちなので、そこだけ注意を。
+
+この画面で参加、欠席を選べるようにして欲しいのとクリックした瞬間前の画面に戻る仕様をやめて欲しい。で前の画面に戻るボタンは欲しい。
+
+7:48 AM
+了解です！2点ですね。
+
+参加/欠席を選ぶUI → タップのたびに変わる方式をやめて、✅❌ボタンを並べて選ぶ形に
+クリックで閉じない → 展開したまま維持、「閉じる」ボタンを追加
+修正します！
+
+
+Viewed 4 files
+Viewed 4 files
+変更箇所が明確になりました。修正します。
+
+
+Edited 4 files
+Edited 4 files
+次に参加/欠席ボタンUIを更新します。
+
+
+Edited a file, read a file
+Edited a file, read a file
+修正しました！変更点まとめ：
+
+参加確認 → タップで循環する方式をやめて、✅❌❓の3つのボタンを並べて明示的に選択する形に
+展開したまま維持 → ボタンを押しても画面が閉じなくなりました（参加状況はその場で更新）
+▲ 閉じるボタン → 詳細の一番下に追加
+ヘッダー部分タップ → 展開/折りたたみ、› が回転して状態を視覚的に表示
+Index
+Code · HTML 
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Index · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>きょうのミッション！🏆</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<title>⚽ チーム管理</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Bebas+Neue&display=swap');
+ 
   :root {
-    --sky: #7DD3FC;
-    --sun: #FDE68A;
-    --grass: #86EFAC;
-    --peach: #FCA5A5;
-    --lavender: #C4B5FD;
-    --orange: #FDBA74;
-    --bg: #FFF9F0;
-    --card: #FFFFFF;
-    --text: #1E293B;
-    --muted: #94A3B8;
-    --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    --radius: 24px;
+    --green: #1a7a3c;
+    --green-light: #2da854;
+    --green-dark: #0d4a23;
+    --pitch: #1e4d2b;
+    --grass: #2d6a3f;
+    --white: #f5f9f6;
+    --grey: #8a9e90;
+    --light: #e8f0ea;
+    --accent: #f0b429;
+    --danger: #e53e3e;
+    --card: #ffffff;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
-    font-family: 'Zen Maru Gothic', 'Nunito', sans-serif;
-    background: var(--bg);
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--light);
+    color: #1a2e1e;
     min-height: 100vh;
-    overflow-x: hidden;
   }
-
-  /* Animated background bubbles */
-  .bg-bubbles {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; overflow: hidden;
+ 
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 60%, var(--green-light) 100%);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 3px 16px rgba(0,0,0,0.25);
   }
-  .bubble {
-    position: absolute; border-radius: 50%; opacity: 0.25;
-    animation: float linear infinite;
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
   }
-  @keyframes float {
-    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-    10% { opacity: 0.25; }
-    90% { opacity: 0.25; }
-    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-
-  .container {
-    position: relative; z-index: 1;
-    max-width: 480px; margin: 0 auto;
-    padding: 24px 16px 120px;
+  .logo-icon { font-size: 28px; }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    line-height: 1;
   }
-
-  /* Header */
-  .header {
-    text-align: center; margin-bottom: 28px;
-    animation: slideDown 0.6s cubic-bezier(.34,1.56,.64,1);
+  .logo-sub {
+    font-size: 10px;
+    opacity: 0.75;
+    letter-spacing: 1px;
+    margin-top: 2px;
   }
-  @keyframes slideDown {
-    from { transform: translateY(-30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  .header-actions { display: flex; gap: 8px; }
+  .btn-admin {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: background 0.2s;
   }
-  .header-emoji { font-size: 56px; display: block; margin-bottom: 4px; }
-  .header h1 {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 900; font-size: 28px;
-    color: var(--text);
-    letter-spacing: -0.5px;
+  .btn-admin:hover { background: rgba(255,255,255,0.25); }
+ 
+  /* NAV TABS */
+  nav {
+    background: var(--green-dark);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  .date-badge {
-    display: inline-block; margin-top: 8px;
-    background: var(--sun); color: #92400E;
-    font-weight: 700; font-size: 13px;
-    padding: 4px 14px; border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(253,230,138,0.5);
+  nav::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-
-  /* Progress bar */
-  .progress-wrap {
-    background: #E2E8F0; border-radius: 999px;
-    height: 16px; margin-bottom: 8px; overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
-  .progress-bar {
-    height: 100%; border-radius: 999px;
-    background: linear-gradient(90deg, #86EFAC, #34D399);
-    transition: width 0.6s cubic-bezier(.34,1.56,.64,1);
-    position: relative; overflow: hidden;
+  .tab:hover:not(.active) {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.05);
   }
-  .progress-bar::after {
-    content: '';
-    position: absolute; top: 0; left: -100%; width: 60%;
-    height: 100%; background: rgba(255,255,255,0.4);
-    animation: shimmer 2s infinite;
-  }
-  @keyframes shimmer {
-    to { left: 200%; }
-  }
-  .progress-label {
-    text-align: right; font-size: 12px;
-    color: var(--muted); font-weight: 700; margin-bottom: 20px;
-  }
-
-  /* Task cards */
-  .tasks { display: flex; flex-direction: column; gap: 12px; }
-
-  .task-card {
-    background: var(--card); border-radius: var(--radius);
-    padding: 18px 20px; display: flex; align-items: center; gap: 16px;
-    box-shadow: var(--shadow); cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
-    border: 3px solid transparent;
-    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  @keyframes popIn {
-    from { transform: scale(0.85); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .task-card:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
-  .task-card:active { transform: scale(0.97); }
-  .task-card.done {
-    border-color: #86EFAC;
-    background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
-  }
-
-  .task-icon {
-    width: 52px; height: 52px; border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; flex-shrink: 0;
-    transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-  }
-  .task-card.done .task-icon { transform: scale(1.15) rotate(-5deg); }
-
-  .task-info { flex: 1; }
-  .task-name {
-    font-weight: 800; font-size: 17px; color: var(--text);
-    transition: color 0.3s;
-  }
-  .task-card.done .task-name {
-    color: #16A34A;
-    text-decoration: line-through;
-    text-decoration-color: #86EFAC;
-  }
-  .task-sub {
-    font-size: 12px; color: var(--muted); margin-top: 2px; font-weight: 400;
-  }
-
-  /* Custom checkbox */
-  .check-circle {
-    width: 32px; height: 32px; border-radius: 50%;
-    border: 3px solid #CBD5E1;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
-    background: white;
-  }
-  .task-card.done .check-circle {
-    background: #22C55E; border-color: #22C55E;
-    transform: scale(1.1);
-    box-shadow: 0 0 0 4px rgba(34,197,94,0.2);
-  }
-  .check-circle svg { display: none; }
-  .task-card.done .check-circle svg { display: block; }
-
-  /* Badges section */
-  .badges-section {
-    margin-top: 32px;
-    animation: slideUp 0.6s 0.3s both;
-  }
-  @keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .section-title {
-    font-weight: 800; font-size: 18px; color: var(--text);
-    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-  }
-
-  .badges-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-  }
-  .badge-item {
-    background: var(--card); border-radius: 18px;
-    padding: 14px 8px; text-align: center;
+ 
+  /* MAIN */
+  main { padding: 16px; max-width: 800px; margin: 0 auto; }
+ 
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+ 
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
     box-shadow: var(--shadow);
-    transition: transform 0.3s, opacity 0.3s;
+    padding: 16px;
+    margin-bottom: 12px;
   }
-  .badge-item.locked { opacity: 0.35; filter: grayscale(1); }
-  .badge-item:not(.locked) { animation: badgePop 0.4s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes badgePop {
-    from { transform: scale(0.8); }
-    to { transform: scale(1); }
+  .card-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--green-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-  .badge-emoji { font-size: 32px; display: block; margin-bottom: 4px; }
-  .badge-name { font-size: 11px; font-weight: 700; color: var(--text); }
-  .badge-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-  /* Streak */
-  .streak-card {
-    margin-top: 20px;
-    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
-    border-radius: var(--radius); padding: 16px 20px;
-    display: flex; align-items: center; gap: 14px;
-    box-shadow: 0 4px 20px rgba(253,186,74,0.3);
+ 
+  /* EVENT LIST */
+  .event-item {
+    border: 1px solid #e0ebe3;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    background: #fafcfa;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
   }
-  .streak-fire { font-size: 40px; }
-  .streak-info h3 { font-weight: 800; font-size: 16px; color: #92400E; }
-  .streak-info p { font-size: 13px; color: #B45309; margin-top: 2px; }
-
-  /* Completion banner */
-  .complete-banner {
-    display: none; text-align: center;
-    background: linear-gradient(135deg, #DCFCE7, #A7F3D0);
-    border-radius: var(--radius); padding: 24px;
-    margin-top: 20px; box-shadow: 0 4px 24px rgba(34,197,94,0.2);
+  .event-item:hover { border-color: var(--green-light); box-shadow: 0 2px 8px rgba(26,122,60,0.12); }
+  .event-item.expanded { border-color: var(--green); }
+  .event-header { display: flex; align-items: center; gap: 10px; }
+  .event-date {
+    background: var(--green);
+    color: white;
+    border-radius: 8px;
+    padding: 6px 10px;
+    text-align: center;
+    min-width: 54px;
+    flex-shrink: 0;
   }
-  .complete-banner.show {
-    display: block;
-    animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  .event-date .month { font-size: 10px; opacity: 0.85; }
+  .event-date .day { font-size: 22px; font-weight: 900; line-height: 1; }
+  .event-date .weekday { font-size: 10px; opacity: 0.85; }
+  .event-info { flex: 1; min-width: 0; }
+  .event-title { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .event-meta { font-size: 12px; color: var(--grey); margin-top: 2px; }
+  .event-type-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
   }
-  .complete-banner .big-emoji { font-size: 64px; display: block; margin-bottom: 8px; }
-  .complete-banner h2 { font-size: 22px; font-weight: 900; color: #15803D; }
-  .complete-banner p { color: #16A34A; margin-top: 4px; font-weight: 600; }
-
-  /* Reset button */
-  .reset-btn {
-    display: block; width: 100%; margin-top: 16px;
-    background: none; border: 2px dashed #CBD5E1;
-    border-radius: 16px; padding: 12px;
-    color: var(--muted); font-family: inherit;
-    font-size: 13px; font-weight: 700; cursor: pointer;
+  .badge-match { background: #fef3c7; color: #92400e; }
+  .badge-practice { background: #d1fae5; color: #065f46; }
+  .badge-tournament { background: #ede9fe; color: #5b21b6; }
+  .badge-other { background: #e5e7eb; color: #4b5563; }
+ 
+  /* EVENT DETAIL (expanded) */
+  .event-detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0ebe3; }
+  .event-item.expanded .event-detail { display: block; }
+  .event-detail-row { display: flex; font-size: 13px; margin-bottom: 6px; gap: 8px; }
+  .event-detail-label { color: var(--grey); min-width: 60px; flex-shrink: 0; }
+  .event-detail-value { color: #1a2e1e; flex: 1; word-break: break-all; }
+  .event-detail-value a { color: var(--green); text-decoration: none; }
+  .event-detail-value a:hover { text-decoration: underline; }
+ 
+  /* ATTENDANCE */
+  .attendance-section { margin-top: 12px; }
+  .attendance-title { font-size: 12px; font-weight: 700; color: var(--grey); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+  .attendance-summary {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .att-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .att-count.ok { background: #d1fae5; color: #065f46; }
+  .att-count.ng { background: #fee2e2; color: #991b1b; }
+  .att-count.pending { background: #f3f4f6; color: #6b7280; }
+ 
+  .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .player-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    background: white;
+    transition: all 0.15s;
+  }
+  .player-card.ok { border-color: #34d399; background: #f0fdf4; }
+  .player-card.ng { border-color: #f87171; background: #fff5f5; }
+  .player-card-name { font-weight: 700; }
+  .player-card-btns { display: flex; gap: 5px; }
+  .att-btn {
+    flex: 1;
+    padding: 5px 0;
+    border-radius: 6px;
+    border: 1.5px solid #e5e7eb;
+    background: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .att-btn.selected-ok { border-color: #34d399; background: #d1fae5; }
+  .att-btn.selected-ng { border-color: #f87171; background: #fee2e2; }
+  .att-btn:hover { transform: scale(1.1); }
+ 
+  /* FORMS */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 12px; font-weight: 700; color: var(--grey); margin-bottom: 5px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #1a2e1e;
+    background: white;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green-light);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+ 
+  .btn {
+    padding: 11px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
     transition: all 0.2s;
   }
-  .reset-btn:hover { background: #F1F5F9; color: var(--text); border-color: #94A3B8; }
-
-  /* Confetti burst */
-  .confetti-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 999;
+  .btn-primary {
+    background: var(--green);
+    color: white;
+    width: 100%;
   }
-  .confetti-piece {
-    position: absolute; width: 10px; height: 10px;
-    border-radius: 2px;
-    animation: confettiFall 1.5s ease-in forwards;
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-danger {
+    background: #fee2e2;
+    color: var(--danger);
+    font-size: 12px;
+    padding: 6px 12px;
   }
-  @keyframes confettiFall {
-    0% { transform: translateY(-10px) rotate(0deg) scale(1); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg) scale(0.5); opacity: 0; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-sm { font-size: 12px; padding: 6px 12px; }
+  .btn-ghost { background: transparent; border: 1.5px solid #d1d5db; color: #4b5563; }
+  .btn-ghost:hover { background: var(--light); }
+ 
+  /* MEMBER LIST */
+  .member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: white;
   }
-
-  /* Stars floating */
-  .star-pop {
-    position: fixed; pointer-events: none; z-index: 1000;
-    font-size: 24px; animation: starFloat 1s ease-out forwards;
+  .member-name { font-weight: 700; font-size: 14px; }
+  .member-meta { font-size: 12px; color: var(--grey); }
+ 
+  /* ADMIN OVERLAY */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
-  @keyframes starFloat {
-    0% { transform: translateY(0) scale(0.5); opacity: 1; }
-    100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+  .overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px;
   }
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--green-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .modal-actions .btn { flex: 1; }
+ 
+  /* SETTINGS */
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+ 
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green-dark);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+ 
+  /* CONFIG NOTICE */
+  .config-notice {
+    background: #fffbeb;
+    border: 1.5px solid #fcd34d;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.6;
+  }
+  .config-notice strong { display: block; margin-bottom: 4px; font-size: 14px; }
+  .config-notice code {
+    background: #fef3c7;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+  }
+ 
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--grey);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+ 
+  /* STATUS PILL */
+  .status-pill {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+  }
+  .pill-ok { background: #d1fae5; color: #065f46; }
+  .pill-ng { background: #fee2e2; color: #991b1b; }
+  .pill-pending { background: #f3f4f6; color: #6b7280; }
+ 
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .player-grid { grid-template-columns: repeat(2, 1fr); }
+    .logo-text { font-size: 18px; }
+  }
+ 
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: var(--grey);
+    font-size: 14px;
+  }
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--light);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 10px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+ 
+  .row { display: flex; gap: 8px; }
+  .row .form-group { flex: 1; }
 </style>
 </head>
 <body>
-
-<div class="bg-bubbles" id="bubbles"></div>
-
-<div class="container">
-  <div class="header">
-    <span class="header-emoji">🏆</span>
-    <h1>きょうのミッション！</h1>
-    <div class="date-badge" id="dateBadge"></div>
-  </div>
-
-  <div class="progress-wrap">
-    <div class="progress-bar" id="progressBar" style="width:0%"></div>
-  </div>
-  <div class="progress-label" id="progressLabel">0 / 6 おわった</div>
-
-  <div class="tasks" id="taskList"></div>
-
-  <div class="complete-banner" id="completeBanner">
-    <span class="big-emoji">🎉</span>
-    <h2>ぜんぶできたよ！</h2>
-    <p>きょうもよくがんばりました！すごい！</p>
-  </div>
-
-  <div class="badges-section">
-    <div class="section-title">🏅 バッジコレクション</div>
-    <div class="badges-grid" id="badgesGrid"></div>
-  </div>
-
-  <div class="streak-card">
-    <div class="streak-fire">🔥</div>
-    <div class="streak-info">
-      <h3><span id="streakCount">0</span>日れんぞく！</h3>
-      <p id="streakMsg">きょうもがんばろう！</p>
+ 
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">⚽</span>
+      <div>
+        <div class="logo-text" id="teamNameDisplay">チーム管理</div>
+        <div class="logo-sub">TEAM SCHEDULE APP</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-admin" onclick="openAdminModal()">⚙ 管理</button>
     </div>
   </div>
-
-  <button class="reset-btn" onclick="resetToday()">🔄 きょうのチェックをリセット</button>
+  <nav>
+    <div class="tab active" onclick="showTab('schedule')" id="tab-schedule">📅 日程・参加</div>
+    <div class="tab" onclick="showTab('members')" id="tab-members">👦 メンバー</div>
+    <div class="tab" onclick="showTab('settings')" id="tab-settings">🔧 設定</div>
+  </nav>
+</header>
+ 
+<main>
+ 
+  <!-- ======================== SCHEDULE TAB ======================== -->
+  <section class="section active" id="section-schedule">
+ 
+    <div id="configNotice" class="config-notice" style="display:none">
+      <strong>⚠ セットアップが必要です</strong>
+      「設定」タブでGoogle Apps ScriptのURLを入力してください。入力後、データの読み込みが始まります。
+    </div>
+ 
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="font-size:13px; color:var(--grey);">直近・今後のイベント</div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-ghost btn-sm" onclick="loadData()">🔄 更新</button>
+        <button class="btn btn-primary btn-sm" onclick="openEventModal()">＋ 追加</button>
+      </div>
+    </div>
+ 
+    <div id="eventList">
+      <div class="loading"><div class="spinner"></div>読み込み中...</div>
+    </div>
+ 
+  </section>
+ 
+  <!-- ======================== MEMBERS TAB ======================== -->
+  <section class="section" id="section-members">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div style="font-size:13px; color:var(--grey);">登録メンバー</div>
+      <button class="btn btn-primary btn-sm" onclick="openMemberModal()">＋ メンバー追加</button>
+    </div>
+    <div id="memberList">
+      <div class="loading"><div class="spinner"></div>読み込み中...</div>
+    </div>
+  </section>
+ 
+  <!-- ======================== SETTINGS TAB ======================== -->
+  <section class="section" id="section-settings">
+    <div class="card">
+      <div class="card-title">🔧 アプリ設定</div>
+ 
+      <div class="form-group">
+        <label>チーム名</label>
+        <input type="text" id="settingTeamName" placeholder="例: 有志サッカーチーム" />
+      </div>
+ 
+      <div class="form-group">
+        <label>Google Apps Script URL</label>
+        <input type="url" id="settingGasUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+        <div style="font-size:11px; color:var(--grey); margin-top:4px;">GASのウェブアプリURLを貼り付けてください</div>
+      </div>
+ 
+      <button class="btn btn-primary" onclick="saveSettings()">💾 設定を保存</button>
+    </div>
+ 
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">📋 GASセットアップ手順</div>
+      <div style="font-size:13px; line-height:1.9; color:#374151;">
+        <b>1.</b> Google スプレッドシートを新規作成<br>
+        <b>2.</b> シート名を以下の通りにする：<br>
+        &emsp;・<code style="background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:12px;">events</code>（日程）<br>
+        &emsp;・<code style="background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:12px;">members</code>（メンバー）<br>
+        &emsp;・<code style="background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:12px;">attendance</code>（参加状況）<br>
+        <b>3.</b> 「拡張機能」→「Apps Script」を開く<br>
+        <b>4.</b> <a href="#" onclick="showGasCode()" style="color:var(--green);">このGASコード</a>をコピーして貼り付ける<br>
+        <b>5.</b> 「デプロイ」→「新しいデプロイ」→ウェブアプリ<br>
+        &emsp;アクセス：「全員」に設定してURLをコピー<br>
+        <b>6.</b> 上の「GAS URL」欄に貼り付けて保存
+      </div>
+    </div>
+  </section>
+ 
+</main>
+ 
+<!-- ==================== MODALS ==================== -->
+ 
+<!-- EVENT MODAL -->
+<div class="overlay" id="eventOverlay">
+  <div class="modal">
+    <div class="modal-title" id="eventModalTitle">📅 イベント追加</div>
+    <input type="hidden" id="eventId" />
+    <div class="row">
+      <div class="form-group">
+        <label>日付</label>
+        <input type="date" id="eventDate" />
+      </div>
+      <div class="form-group">
+        <label>種別</label>
+        <select id="eventType">
+          <option value="match">試合</option>
+          <option value="practice">練習</option>
+          <option value="tournament">大会</option>
+          <option value="other">その他</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>タイトル</label>
+      <input type="text" id="eventTitle" placeholder="例: 有志練習試合 vs ○○FC" />
+    </div>
+    <div class="form-group">
+      <label>場所</label>
+      <input type="text" id="eventLocation" placeholder="例: 世田谷公園" />
+    </div>
+    <div class="form-group">
+      <label>時間</label>
+      <input type="text" id="eventTime" placeholder="例: 09:00〜12:00" />
+    </div>
+    <div class="form-group">
+      <label>大会情報ファイル / リンク</label>
+      <input type="url" id="eventFileUrl" placeholder="Google DriveのURL" />
+    </div>
+    <div class="form-group">
+      <label>メモ</label>
+      <textarea id="eventNote" placeholder="持ち物・注意事項など"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeEventModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveEvent()">💾 保存</button>
+    </div>
+    <div style="text-align:right; margin-top:8px;" id="deleteEventBtn" style="display:none">
+      <button class="btn btn-danger" onclick="deleteEvent()">🗑 削除</button>
+    </div>
+  </div>
 </div>
-
-<div class="confetti-container" id="confettiContainer"></div>
-
-<!-- Loading overlay -->
-<div id="loadingOverlay" style="display:flex;position:fixed;inset:0;z-index:2000;background:rgba(255,249,240,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px;">
-  <div style="font-size:48px;animation:spin 1s linear infinite">⭐</div>
-  <div style="font-weight:800;color:#1E293B;font-size:16px">ミッションよみこみちゅう…</div>
+ 
+<!-- MEMBER MODAL -->
+<div class="overlay" id="memberOverlay">
+  <div class="modal">
+    <div class="modal-title">👦 メンバー追加</div>
+    <input type="hidden" id="memberId" />
+    <div class="form-group">
+      <label>子供の名前</label>
+      <input type="text" id="memberName" placeholder="例: 山田 太郎" />
+    </div>
+    <div class="form-group">
+      <label>学年</label>
+      <select id="memberGrade">
+        <option value="">選択してください</option>
+        <option value="年長">年長</option>
+        <option value="小1">小学1年</option>
+        <option value="小2">小学2年</option>
+        <option value="小3">小学3年</option>
+        <option value="小4">小学4年</option>
+        <option value="小5">小学5年</option>
+        <option value="小6">小学6年</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>保護者名（任意）</label>
+      <input type="text" id="memberParent" placeholder="例: 山田 一郎" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeMemberModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveMember()">💾 保存</button>
+    </div>
+    <div style="text-align:right; margin-top:8px;" id="deleteMemberBtn" style="display:none">
+      <button class="btn btn-danger" onclick="deleteMember()">🗑 削除</button>
+    </div>
+  </div>
 </div>
-<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-
-<!-- Error toast -->
-<div id="errorMsg" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#FCA5A5;color:#7F1D1D;padding:10px 20px;border-radius:16px;font-weight:700;font-size:14px;z-index:3000;box-shadow:0 4px 16px rgba(0,0,0,0.1);"></div>
-
+ 
+<!-- ADMIN MODAL (GAS code) -->
+<div class="overlay" id="gasCodeOverlay">
+  <div class="modal">
+    <div class="modal-title">📄 GASコード</div>
+    <p style="font-size:12px; color:var(--grey); margin-bottom:10px;">以下をGoogle Apps Scriptに貼り付けてください</p>
+    <textarea id="gasCodeText" style="font-family:monospace; font-size:11px; height:300px; white-space:pre;" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeGasCodeModal()">閉じる</button>
+      <button class="btn btn-primary" onclick="copyGasCode()">📋 コピー</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- ADMIN LOCK MODAL -->
+<div class="overlay" id="adminOverlay">
+  <div class="modal">
+    <div class="modal-title">⚙ 管理モード</div>
+    <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">管理者パスワードを入力してください（設定がない場合はそのままOK）</p>
+    <div class="form-group">
+      <label>パスワード（任意）</label>
+      <input type="password" id="adminPassword" placeholder="パスワード" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAdminModal()">キャンセル</button>
+      <button class="btn btn-primary" onclick="enterAdmin()">OK</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+ 
 <script>
-const TASKS = [
-  { id: 'bath',      name: 'お風呂',      icon: '🛁', color: '#BFDBFE', sub: 'きれいになろう！' },
-  { id: 'piano',     name: 'ピアノ',      icon: '🎹', color: '#DDD6FE', sub: 'れんしゅうがんばれ！' },
-  { id: 'prep',      name: 'あしたのじゅんび', icon: '🎒', color: '#FED7AA', sub: 'わすれものなし！' },
-  { id: 'homework',  name: 'しゅくだい',  icon: '📝', color: '#FEF08A', sub: 'ていねいにやろう！' },
-  { id: 'challenge', name: 'チャレンジタッチ', icon: '📱', color: '#BBF7D0', sub: '1レッスンやってみよう！' },
-  { id: 'topclass',  name: 'トップクラス', icon: '🏆', color: '#FECDD3', sub: 'むずかしい問題にちょうせん！' },
-  { id: 'balltouch', name: 'ボールタッチ', icon: '⚽', color: '#BBF7D0', sub: 'じゅくれんにはじしゅれんあるのみ！' },
-];
-
-const BADGES = [
-  { id: 'first_done',   name: 'はじめての1こ', emoji: '🌱', desc: '1つクリア', req: s => s.totalChecks >= 1 },
-  { id: 'half_done',    name: 'はんぶんクリア', emoji: '⚡', desc: '3つクリア', req: s => s.todayDone >= 3 },
-  { id: 'all_done',     name: 'ぜんぶクリア', emoji: '👑', desc: '全6つクリア', req: s => s.todayDone >= 6 },
-  { id: 'streak3',      name: '3にちれんぞく', emoji: '🔥', desc: '3日連続', req: s => s.streak >= 3 },
-  { id: 'streak7',      name: '1しゅうかん！', emoji: '🌟', desc: '7日連続', req: s => s.streak >= 7 },
-  { id: 'piano_master', name: 'ピアノマスター', emoji: '🎵', desc: 'ピアノ10回', req: s => (s.taskCounts?.piano || 0) >= 10 },
-];
-
-// --- Supabase config ---
-const SUPABASE_URL = 'https://rggpwqejwgdnzkmnwkom.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_jESS04P2DnO7Vbx7jn4ScA_6d_MVYX8';
-
-async function sbFetch(path, options = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': options.prefer || 'return=representation',
-      ...(options.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
+// =====================================================
+// STATE
+// =====================================================
+let state = {
+  gasUrl: '',
+  teamName: 'チーム管理',
+  events: [],
+  members: [],
+  attendance: [], // [{eventId, memberId, status: 'ok'|'ng'|'pending'}]
+  editingEventId: null,
+  editingMemberId: null,
+};
+ 
+// GAS CODE TEMPLATE
+const GAS_CODE = `// Google Apps Script - チーム管理アプリ用
+// シート名: events, members, attendance
+ 
+const SS = SpreadsheetApp.getActiveSpreadsheet();
+ 
+function doGet(e) {
+  return handleRequest(e);
 }
-
-// --- State ---
-function todayKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+ 
+function doPost(e) {
+  return handleRequest(e);
 }
-
-// In-memory state (synced from Supabase)
-let state = { days: {}, streak: 0, lastDate: null, totalChecks: 0, taskCounts: {} };
-
-function getToday(s) {
-  const k = todayKey();
-  if (!s.days[k]) s.days[k] = {};
-  return s.days[k];
-}
-
-function updateStreakFromDays(s) {
-  // Compute streak from known days
-  let streak = 0;
-  let d = new Date();
-  while (true) {
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const dayData = s.days[key] || {};
-    const allDone = TASKS.every(t => dayData[t.id]);
-    if (!allDone) break;
-    streak++;
-    d.setDate(d.getDate() - 1);
-  }
-  s.streak = streak;
-}
-
-async function loadFromSupabase() {
-  showLoading(true);
+ 
+function handleRequest(e) {
+  const p = e.parameter || {};
+  const action = p.action || (e.postData && JSON.parse(e.postData.contents || '{}').action);
+  const body = e.postData ? JSON.parse(e.postData.contents || '{}') : p;
+ 
+  let result;
   try {
-    // Load all records
-    const records = await sbFetch('todo_records?select=*&order=date.desc');
-    state.days = {};
-    state.taskCounts = {};
-    state.totalChecks = 0;
-    for (const r of records) {
-      if (!state.days[r.date]) state.days[r.date] = {};
-      state.days[r.date][r.task_id] = r.done;
-      if (r.done) {
-        state.totalChecks++;
-        state.taskCounts[r.task_id] = (state.taskCounts[r.task_id] || 0) + 1;
-      }
+    switch(body.action || p.action) {
+      case 'getAll': result = getAll(); break;
+      case 'saveEvent': result = saveEvent(body); break;
+      case 'deleteEvent': result = deleteRow('events', body.id); break;
+      case 'saveMember': result = saveMember(body); break;
+      case 'deleteMember': result = deleteRow('members', body.id); break;
+      case 'setAttendance': result = setAttendance(body); break;
+      default: result = {error: 'unknown action'};
     }
-    updateStreakFromDays(state);
-  } catch(e) {
-    console.error('Supabase load error:', e);
-    showError('データの読み込みに失敗しました 😢');
+  } catch(err) {
+    result = {error: err.message};
   }
-  showLoading(false);
+ 
+  return ContentService
+    .createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
 }
-
-async function saveToSupabase(taskId, done) {
-  const date = todayKey();
-  try {
-    await sbFetch('todo_records', {
-      method: 'POST',
-      prefer: 'resolution=merge-duplicates,return=representation',
-      headers: { 'Prefer': 'resolution=merge-duplicates' },
-      body: JSON.stringify({
-        date,
-        task_id: taskId,
-        done,
-        checked_at: done ? new Date().toISOString() : null,
-      }),
-    });
-  } catch(e) {
-    console.error('Supabase save error:', e);
-    showError('保存に失敗しました 😢');
-  }
+ 
+function getAll() {
+  return {
+    events: sheetToArray('events'),
+    members: sheetToArray('members'),
+    attendance: sheetToArray('attendance'),
+  };
 }
-
-async function resetTodaySupabase() {
-  const date = todayKey();
-  try {
-    await sbFetch(`todo_records?date=eq.${date}`, {
-      method: 'DELETE',
-      prefer: '',
-    });
-  } catch(e) {
-    console.error('Reset error:', e);
-  }
-}
-
-function showLoading(on) {
-  document.getElementById('loadingOverlay').style.display = on ? 'flex' : 'none';
-}
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 3000);
-}
-
-// --- Render ---
-function render() {
-  const today = getToday(state);
-  const doneCount = Object.values(today).filter(Boolean).length;
-
-  // Date
-  const now = new Date();
-  const weekdays = ['にちようび','げつようび','かようび','すいようび','もくようび','きんようび','どようび'];
-  document.getElementById('dateBadge').textContent =
-    `${now.getMonth()+1}がつ ${now.getDate()}にち（${weekdays[now.getDay()]}）`;
-
-  // Progress
-  const pct = Math.round(doneCount / TASKS.length * 100);
-  document.getElementById('progressBar').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent = `${doneCount} / ${TASKS.length} おわった`;
-
-  // Tasks
-  const list = document.getElementById('taskList');
-  list.innerHTML = '';
-  TASKS.forEach((t, i) => {
-    const done = !!today[t.id];
-    const card = document.createElement('div');
-    card.className = 'task-card' + (done ? ' done' : '');
-    card.style.animationDelay = (i * 0.07) + 's';
-    card.innerHTML = `
-      <div class="task-icon" style="background:${t.color}">${t.icon}</div>
-      <div class="task-info">
-        <div class="task-name">${t.name}</div>
-        <div class="task-sub">${t.sub}</div>
-      </div>
-      <div class="check-circle">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8L6.5 11.5L13 4.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-    `;
-    card.addEventListener('click', () => toggleTask(t.id, card));
-    list.appendChild(card);
-  });
-
-  // Complete banner
-  const banner = document.getElementById('completeBanner');
-  banner.className = 'complete-banner' + (doneCount === TASKS.length ? ' show' : '');
-
-  // Streak
-  document.getElementById('streakCount').textContent = state.streak || 0;
-  document.getElementById('streakMsg').textContent =
-    state.streak >= 7 ? 'すごい！1しゅうかんつづいてる！' :
-    state.streak >= 3 ? 'いいかんじ！つづけよう！' :
-    'きょうもがんばろう！';
-
-  // Badges
-  const todayStats = { todayDone: doneCount, streak: state.streak || 0, totalChecks: state.totalChecks || 0, taskCounts: state.taskCounts || {} };
-  const badgeGrid = document.getElementById('badgesGrid');
-  badgeGrid.innerHTML = '';
-  BADGES.forEach(b => {
-    const unlocked = b.req(todayStats);
-    const el = document.createElement('div');
-    el.className = 'badge-item' + (unlocked ? '' : ' locked');
-    el.innerHTML = `
-      <span class="badge-emoji">${b.emoji}</span>
-      <div class="badge-name">${b.name}</div>
-      <div class="badge-desc">${b.desc}</div>
-    `;
-    badgeGrid.appendChild(el);
+ 
+function sheetToArray(name) {
+  const sh = getOrCreateSheet(name);
+  const data = sh.getDataRange().getValues();
+  if (data.length < 2) return [];
+  const headers = data[0];
+  return data.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = row[i]);
+    return obj;
   });
 }
-
-async function toggleTask(id, card) {
-  const today = getToday(state);
-  const wasDone = !!today[id];
-  const newDone = !wasDone;
-  today[id] = newDone;
-
-  if (newDone) {
-    state.totalChecks = (state.totalChecks || 0) + 1;
-    state.taskCounts = state.taskCounts || {};
-    state.taskCounts[id] = (state.taskCounts[id] || 0) + 1;
-    spawnStars(card);
-    const doneCount = Object.values(today).filter(Boolean).length;
-    if (doneCount === TASKS.length) {
-      updateStreakFromDays(state);
-      setTimeout(() => launchConfetti(), 200);
-    }
+ 
+function getOrCreateSheet(name) {
+  let sh = SS.getSheetByName(name);
+  if (!sh) {
+    sh = SS.insertSheet(name);
+    const headers = {
+      events: ['id','date','type','title','location','time','fileUrl','note'],
+      members: ['id','name','grade','parent'],
+      attendance: ['eventId','memberId','status'],
+    };
+    sh.appendRow(headers[name] || ['id']);
+  }
+  return sh;
+}
+ 
+function saveEvent(data) {
+  const sh = getOrCreateSheet('events');
+  const rows = sh.getDataRange().getValues();
+  const headers = rows[0];
+  const id = data.id || new Date().getTime().toString();
+  const row = [id, data.date, data.type, data.title, data.location, data.time, data.fileUrl, data.note];
+  
+  // find existing
+  const existing = rows.slice(1).findIndex(r => r[0] == id);
+  if (existing >= 0) {
+    sh.getRange(existing + 2, 1, 1, row.length).setValues([row]);
   } else {
-    state.totalChecks = Math.max(0, (state.totalChecks || 1) - 1);
-    state.taskCounts[id] = Math.max(0, (state.taskCounts[id] || 1) - 1);
+    sh.appendRow(row);
   }
-
-  render();
-  await saveToSupabase(id, newDone);
+  return {ok: true, id};
 }
-
-async function resetToday() {
-  if (!confirm('きょうのチェックをリセットしますか？')) return;
-  const k = todayKey();
-  state.days[k] = {};
-  render();
-  await resetTodaySupabase();
-}
-
-// --- Confetti ---
-function launchConfetti() {
-  const colors = ['#FCA5A5','#FDE68A','#86EFAC','#7DD3FC','#C4B5FD','#FDBA74'];
-  const container = document.getElementById('confettiContainer');
-  for (let i = 0; i < 80; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.style.cssText = `
-      left: ${Math.random()*100}vw;
-      top: -10px;
-      background: ${colors[Math.floor(Math.random()*colors.length)]};
-      animation-delay: ${Math.random()*0.8}s;
-      animation-duration: ${1.2 + Math.random()*0.8}s;
-      transform: rotate(${Math.random()*360}deg);
-      width: ${6+Math.random()*8}px;
-      height: ${6+Math.random()*8}px;
-    `;
-    container.appendChild(piece);
-    setTimeout(() => piece.remove(), 2500);
+ 
+function saveMember(data) {
+  const sh = getOrCreateSheet('members');
+  const rows = sh.getDataRange().getValues();
+  const id = data.id || new Date().getTime().toString();
+  const row = [id, data.name, data.grade, data.parent];
+  
+  const existing = rows.slice(1).findIndex(r => r[0] == id);
+  if (existing >= 0) {
+    sh.getRange(existing + 2, 1, 1, row.length).setValues([row]);
+  } else {
+    sh.appendRow(row);
   }
+  return {ok: true, id};
 }
-
-// --- Stars on check ---
-function spawnStars(el) {
-  const rect = el.getBoundingClientRect();
-  const emojis = ['⭐','✨','🌟','💫'];
-  for (let i = 0; i < 3; i++) {
-    const star = document.createElement('div');
-    star.className = 'star-pop';
-    star.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    star.style.cssText = `
-      left: ${rect.left + rect.width*0.3 + Math.random()*rect.width*0.4}px;
-      top: ${rect.top}px;
-      animation-delay: ${i*0.1}s;
-    `;
-    document.body.appendChild(star);
-    setTimeout(() => star.remove(), 1200);
+ 
+function setAttendance(data) {
+  const sh = getOrCreateSheet('attendance');
+  const rows = sh.getDataRange().getValues();
+  
+  const existing = rows.slice(1).findIndex(r => r[0] == data.eventId && r[1] == data.memberId);
+  if (existing >= 0) {
+    sh.getRange(existing + 2, 3).setValue(data.status);
+  } else {
+    sh.appendRow([data.eventId, data.memberId, data.status]);
   }
+  return {ok: true};
 }
-
-// --- Floating bubbles ---
-function createBubbles() {
-  const container = document.getElementById('bubbles');
-  const colors = ['#7DD3FC','#FDE68A','#86EFAC','#FCA5A5','#C4B5FD','#FDBA74'];
-  for (let i = 0; i < 12; i++) {
-    const b = document.createElement('div');
-    b.className = 'bubble';
-    const size = 20 + Math.random() * 60;
-    b.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      animation-duration:${10+Math.random()*15}s;
-      animation-delay:${Math.random()*10}s;
-    `;
-    container.appendChild(b);
+ 
+function deleteRow(sheetName, id) {
+  const sh = getOrCreateSheet(sheetName);
+  const rows = sh.getDataRange().getValues();
+  const idx = rows.slice(1).findIndex(r => r[0] == id);
+  if (idx >= 0) sh.deleteRow(idx + 2);
+  return {ok: true};
+}
+`;
+ 
+// =====================================================
+// INIT
+// =====================================================
+function init() {
+  const saved = localStorage.getItem('soccerTeamConfig');
+  if (saved) {
+    const cfg = JSON.parse(saved);
+    state.gasUrl = cfg.gasUrl || '';
+    state.teamName = cfg.teamName || 'チーム管理';
+  }
+  document.getElementById('teamNameDisplay').textContent = state.teamName;
+  document.getElementById('settingTeamName').value = state.teamName;
+  document.getElementById('settingGasUrl').value = state.gasUrl;
+  document.getElementById('gasCodeText').value = GAS_CODE;
+ 
+  if (!state.gasUrl) {
+    document.getElementById('configNotice').style.display = 'block';
+    renderEvents();
+    renderMembers();
+  } else {
+    loadData();
   }
 }
-
-createBubbles();
-loadFromSupabase().then(() => render());
+ 
+// =====================================================
+// API
+// =====================================================
+async function gasRequest(body) {
+  if (!state.gasUrl) { showToast('GAS URLが設定されていません'); return null; }
+  try {
+    const res = await fetch(state.gasUrl, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+    return await res.json();
+  } catch(e) {
+    // fallback for CORS: GET with params
+    try {
+      const params = new URLSearchParams(body);
+      const res = await fetch(`${state.gasUrl}?${params}`);
+      return await res.json();
+    } catch(e2) {
+      showToast('通信エラー: ' + e2.message);
+      return null;
+    }
+  }
+}
+ 
+async function loadData() {
+  showToast('データを読み込み中...');
+  const data = await gasRequest({action: 'getAll'});
+  if (!data) return;
+  state.events = data.events || [];
+  state.members = data.members || [];
+  state.attendance = data.attendance || [];
+  renderEvents();
+  renderMembers();
+  showToast('✅ 更新しました');
+}
+ 
+// =====================================================
+// TABS
+// =====================================================
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+ 
+// =====================================================
+// EVENTS
+// =====================================================
+const TYPE_LABELS = {match:'試合', practice:'練習', tournament:'大会', other:'その他'};
+const TYPE_CLASSES = {match:'badge-match', practice:'badge-practice', tournament:'badge-tournament', other:'badge-other'};
+const WEEKDAYS = ['日','月','火','水','木','金','土'];
+ 
+function renderEvents() {
+  const container = document.getElementById('eventList');
+  const sorted = [...state.events].sort((a,b) => a.date < b.date ? -1 : 1);
+  
+  if (sorted.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><p>イベントがまだありません<br>「＋ 追加」で登録しましょう</p></div>`;
+    return;
+  }
+ 
+  container.innerHTML = sorted.map(ev => {
+    const d = new Date(ev.date);
+    const month = (d.getMonth()+1) + '月';
+    const day = d.getDate();
+    const wd = WEEKDAYS[d.getDay()];
+    const wdClass = d.getDay() === 0 ? 'color:#e53e3e' : d.getDay() === 6 ? 'color:#3b82f6' : '';
+    
+    const att = getAttendanceSummary(ev.id);
+    
+    const evIdSafe = ev.id;
+    return `
+    <div class="event-item" id="evitem-${evIdSafe}">
+      <div class="event-header" onclick="toggleEvent('${evIdSafe}')" style="cursor:pointer;display:flex;align-items:center;gap:10px;">
+        <div class="event-date">
+          <div class="month">${month}</div>
+          <div class="day" style="${wdClass}">${day}</div>
+          <div class="weekday" style="${wdClass}">(${wd})</div>
+        </div>
+        <div class="event-info" style="flex:1;min-width:0;">
+          <div class="event-title">${ev.title || '（タイトルなし）'}</div>
+          <div class="event-meta">${ev.location || '場所未定'}${ev.time ? ' / ' + ev.time : ''}</div>
+          <div style="margin-top:4px;">
+            <span class="event-type-badge ${TYPE_CLASSES[ev.type] || 'badge-other'}">${TYPE_LABELS[ev.type] || ev.type}</span>
+            <span style="font-size:11px; color:var(--grey);">
+              ✅${att.ok} ❌${att.ng} ❓${att.pending}
+            </span>
+          </div>
+        </div>
+        <div style="color:var(--grey);font-size:20px;padding-right:4px;transition:transform 0.2s;" class="chevron-${evIdSafe}">›</div>
+      </div>
+      <div class="event-detail">
+        ${ev.location ? `<div class="event-detail-row"><span class="event-detail-label">📍 場所</span><span class="event-detail-value">${ev.location}</span></div>` : ''}
+        ${ev.time ? `<div class="event-detail-row"><span class="event-detail-label">⏰ 時間</span><span class="event-detail-value">${ev.time}</span></div>` : ''}
+        ${ev.fileUrl ? `<div class="event-detail-row"><span class="event-detail-label">📄 資料</span><span class="event-detail-value"><a href="${ev.fileUrl}" target="_blank" rel="noopener">Google Driveで開く →</a></span></div>` : ''}
+        ${ev.note ? `<div class="event-detail-row"><span class="event-detail-label">📝 メモ</span><span class="event-detail-value">${ev.note}</span></div>` : ''}
+        
+        <div class="attendance-section">
+          <div class="attendance-title">参加確認</div>
+          <div class="attendance-summary">
+            <div class="att-count ok">✅ 参加 ${att.ok}人</div>
+            <div class="att-count ng">❌ 欠席 ${att.ng}人</div>
+            <div class="att-count pending">❓ 未回答 ${att.pending}人</div>
+          </div>
+          <div class="player-grid" id="playergrid-${evIdSafe}">
+            ${renderPlayerCards(evIdSafe)}
+          </div>
+        </div>
+ 
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+          <button class="btn btn-ghost btn-sm" onclick="toggleEvent('${evIdSafe}')">▲ 閉じる</button>
+          <button class="btn btn-ghost btn-sm" onclick="openEventModal('${evIdSafe}')">✏ 編集</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+function toggleEvent(id) {
+  const el = document.getElementById('evitem-' + id);
+  el.classList.toggle('expanded');
+  const chevrons = el.querySelectorAll('[class*="chevron-"]');
+  chevrons.forEach(c => {
+    c.style.transform = el.classList.contains('expanded') ? 'rotate(90deg)' : '';
+  });
+}
+ 
+function getAttendanceSummary(eventId) {
+  const total = state.members.length;
+  const eventAtt = state.attendance.filter(a => a.eventId == eventId);
+  const ok = eventAtt.filter(a => a.status === 'ok').length;
+  const ng = eventAtt.filter(a => a.status === 'ng').length;
+  const pending = total - ok - ng;
+  return {ok, ng, pending};
+}
+ 
+function renderPlayerCards(eventId) {
+  if (state.members.length === 0) return '<div style="font-size:12px;color:var(--grey);">メンバーが登録されていません</div>';
+  return state.members.map(m => {
+    const att = state.attendance.find(a => a.eventId == eventId && a.memberId == m.id);
+    const status = att ? att.status : 'pending';
+    return `<div class="player-card ${status}">
+      <div class="player-card-name">${m.name}</div>
+      <div class="player-card-btns">
+        <button class="att-btn ${status === 'ok' ? 'selected-ok' : ''}" onclick="setAttendanceUI('${eventId}','${m.id}','ok')" title="参加">✅</button>
+        <button class="att-btn ${status === 'ng' ? 'selected-ng' : ''}" onclick="setAttendanceUI('${eventId}','${m.id}','ng')" title="欠席">❌</button>
+        <button class="att-btn ${status === 'pending' ? '' : ''}" onclick="setAttendanceUI('${eventId}','${m.id}','pending')" title="未定" style="${status === 'pending' ? 'border-color:#9ca3af;background:#f3f4f6;' : ''}">❓</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+ 
+async function setAttendanceUI(eventId, memberId, status) {
+  const att = state.attendance.find(a => a.eventId == eventId && a.memberId == memberId);
+  if (att) att.status = status;
+  else state.attendance.push({eventId, memberId, status});
+ 
+  // partial re-render: just the grid and summary, don't collapse
+  const grid = document.getElementById('playergrid-' + eventId);
+  if (grid) grid.innerHTML = renderPlayerCards(eventId);
+ 
+  // update summary counts in the item
+  const att2 = getAttendanceSummary(eventId);
+  const item = document.getElementById('evitem-' + eventId);
+  if (item) {
+    item.querySelector('.att-count.ok').textContent = '✅ 参加 ' + att2.ok + '人';
+    item.querySelector('.att-count.ng').textContent = '❌ 欠席 ' + att2.ng + '人';
+    item.querySelector('.att-count.pending').textContent = '❓ 未回答 ' + att2.pending + '人';
+    // update header summary too
+    const headerSummary = item.querySelector('.event-info span[style]');
+    if (headerSummary) headerSummary.textContent = `✅${att2.ok} ❌${att2.ng} ❓${att2.pending}`;
+  }
+ 
+  gasRequest({action: 'setAttendance', eventId, memberId, status});
+}
+ 
+// =====================================================
+// EVENT MODAL
+// =====================================================
+function openEventModal(id) {
+  state.editingEventId = id || null;
+  const ev = id ? state.events.find(e => e.id == id) : null;
+  document.getElementById('eventModalTitle').textContent = ev ? '✏ イベント編集' : '📅 イベント追加';
+  document.getElementById('eventId').value = ev ? ev.id : '';
+  document.getElementById('eventDate').value = ev ? ev.date : '';
+  document.getElementById('eventType').value = ev ? ev.type : 'practice';
+  document.getElementById('eventTitle').value = ev ? ev.title : '';
+  document.getElementById('eventLocation').value = ev ? ev.location : '';
+  document.getElementById('eventTime').value = ev ? ev.time : '';
+  document.getElementById('eventFileUrl').value = ev ? ev.fileUrl : '';
+  document.getElementById('eventNote').value = ev ? ev.note : '';
+  document.getElementById('deleteEventBtn').style.display = ev ? 'block' : 'none';
+  document.getElementById('eventOverlay').classList.add('show');
+}
+function closeEventModal() { document.getElementById('eventOverlay').classList.remove('show'); }
+ 
+async function saveEvent() {
+  const data = {
+    action: 'saveEvent',
+    id: document.getElementById('eventId').value || new Date().getTime().toString(),
+    date: document.getElementById('eventDate').value,
+    type: document.getElementById('eventType').value,
+    title: document.getElementById('eventTitle').value,
+    location: document.getElementById('eventLocation').value,
+    time: document.getElementById('eventTime').value,
+    fileUrl: document.getElementById('eventFileUrl').value,
+    note: document.getElementById('eventNote').value,
+  };
+  if (!data.date || !data.title) { showToast('日付とタイトルを入力してください'); return; }
+  
+  // optimistic update
+  const existing = state.events.findIndex(e => e.id == data.id);
+  if (existing >= 0) state.events[existing] = data;
+  else state.events.push(data);
+  renderEvents();
+  closeEventModal();
+  showToast('💾 保存しました');
+  await gasRequest(data);
+}
+ 
+async function deleteEvent() {
+  if (!confirm('このイベントを削除しますか？')) return;
+  const id = document.getElementById('eventId').value;
+  state.events = state.events.filter(e => e.id != id);
+  state.attendance = state.attendance.filter(a => a.eventId != id);
+  renderEvents();
+  closeEventModal();
+  showToast('🗑 削除しました');
+  await gasRequest({action: 'deleteEvent', id});
+}
+ 
+// =====================================================
+// MEMBERS
+// =====================================================
+function renderMembers() {
+  const container = document.getElementById('memberList');
+  if (state.members.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">👦</div><p>メンバーが登録されていません</p></div>`;
+    return;
+  }
+  container.innerHTML = state.members.map(m => `
+    <div class="member-item">
+      <div>
+        <div class="member-name">${m.name}</div>
+        <div class="member-meta">${m.grade || '学年未設定'}${m.parent ? ' / 保護者: ' + m.parent : ''}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="openMemberModal('${m.id}')">✏</button>
+    </div>
+  `).join('');
+}
+ 
+function openMemberModal(id) {
+  const m = id ? state.members.find(m => m.id == id) : null;
+  document.getElementById('memberId').value = m ? m.id : '';
+  document.getElementById('memberName').value = m ? m.name : '';
+  document.getElementById('memberGrade').value = m ? m.grade : '';
+  document.getElementById('memberParent').value = m ? m.parent : '';
+  document.getElementById('deleteMemberBtn').style.display = m ? 'block' : 'none';
+  document.getElementById('memberOverlay').classList.add('show');
+}
+function closeMemberModal() { document.getElementById('memberOverlay').classList.remove('show'); }
+ 
+async function saveMember() {
+  const data = {
+    action: 'saveMember',
+    id: document.getElementById('memberId').value || new Date().getTime().toString(),
+    name: document.getElementById('memberName').value,
+    grade: document.getElementById('memberGrade').value,
+    parent: document.getElementById('memberParent').value,
+  };
+  if (!data.name) { showToast('名前を入力してください'); return; }
+  const existing = state.members.findIndex(m => m.id == data.id);
+  if (existing >= 0) state.members[existing] = data;
+  else state.members.push(data);
+  renderMembers();
+  closeMemberModal();
+  showToast('💾 保存しました');
+  await gasRequest(data);
+}
+ 
+async function deleteMember() {
+  if (!confirm('このメンバーを削除しますか？')) return;
+  const id = document.getElementById('memberId').value;
+  state.members = state.members.filter(m => m.id != id);
+  renderMembers();
+  closeMemberModal();
+  showToast('🗑 削除しました');
+  await gasRequest({action: 'deleteMember', id});
+}
+ 
+// =====================================================
+// SETTINGS
+// =====================================================
+function saveSettings() {
+  state.teamName = document.getElementById('settingTeamName').value || 'チーム管理';
+  state.gasUrl = document.getElementById('settingGasUrl').value;
+  document.getElementById('teamNameDisplay').textContent = state.teamName;
+  localStorage.setItem('soccerTeamConfig', JSON.stringify({gasUrl: state.gasUrl, teamName: state.teamName}));
+  showToast('✅ 設定を保存しました');
+  if (state.gasUrl) {
+    document.getElementById('configNotice').style.display = 'none';
+    loadData();
+  }
+}
+ 
+// =====================================================
+// ADMIN
+// =====================================================
+function openAdminModal() { document.getElementById('adminOverlay').classList.add('show'); }
+function closeAdminModal() { document.getElementById('adminOverlay').classList.remove('show'); }
+function enterAdmin() {
+  closeAdminModal();
+  showTab('settings');
+}
+ 
+function showGasCode() {
+  document.getElementById('gasCodeOverlay').classList.add('show');
+}
+function closeGasCodeModal() { document.getElementById('gasCodeOverlay').classList.remove('show'); }
+function copyGasCode() {
+  navigator.clipboard.writeText(GAS_CODE).then(() => showToast('📋 コピーしました'));
+}
+ 
+// =====================================================
+// TOAST
+// =====================================================
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+ 
+// =====================================================
+// OVERLAY CLOSE ON BG CLICK
+// =====================================================
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); });
+});
+ 
+// =====================================================
+// START
+// =====================================================
+init();
 </script>
 </body>
 </html>
+ 
